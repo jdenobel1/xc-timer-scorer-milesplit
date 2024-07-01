@@ -1,16 +1,9 @@
-# xc-timer-scorer-milesplit
+This repository contains tools designed to assist with cross country meet results management and video recording.
 
-Overview
-
-This repository contains two tools designed to assist with cross country meet results management and video recording:
-
-    xc_merge_results: A tool to process and merge Milesplit CSV files for boys and girls teams.
-    xc_webcam_stopwatch: A stopwatch and video capture tool that records from multiple webcams and screen, along with recording times.
-
+Tools Overview
 xc_merge_results
-Description
 
-The xc_merge_results tool reads a Milesplit CSV file, processes the data to combine first and last names, sorts by team and last name, and outputs separate CSV and TXT files for boys and girls teams.
+The xc_merge_results tool processes Milesplit CSV files for boys and girls teams, combining data and outputting separate CSV and TXT files.
 Dependencies
 
     pandas
@@ -18,19 +11,20 @@ Dependencies
 
 Usage
 
-    Run the Script: Execute the script using Python.
+Run the Script:
 
-    bash
+bash
 
-    python xc_merge_results.py
+python xc_merge_results.py
 
-    GUI Instructions:
-        Click on "Instructions" to open the instructions file.
-        Click on "Browse Milesplit CSV File" to select the input CSV file.
-        Click on "Convert to Boys and Girls CSV | TXT files" to process the CSV and save the output files.
-        Click on "Open CC_Scorer" to open the CC_Scorer.xls file.
-        Click on "Open XNoteStopWatch" to open the XNoteStopWatch application.
-        Click on "Quit" to exit the program.
+GUI Instructions:
+
+    Click on "Instructions" to open the instructions file.
+    Click on "Browse Milesplit CSV File" to select the input CSV file.
+    Click on "Convert to Boys and Girls CSV | TXT files" to process the CSV and save the output files.
+    Click on "Open CC_Scorer" to open the CC_Scorer.xls file.
+    Click on "Open XNoteStopWatch" to open the XNoteStopWatch application.
+    Click on "Quit" to exit the program.
 
 File Outputs
 
@@ -49,7 +43,6 @@ Functions
     create_gui(): Creates the main GUI for the program.
 
 xc_webcam_stopwatch
-Description
 
 The xc_webcam_stopwatch tool captures video from multiple webcams, overlays a stopwatch on the video, and allows recording times to a text file. It also supports screen recording.
 Dependencies
@@ -62,23 +55,24 @@ Dependencies
 
 Usage
 
-    Run the Script: Execute the script using Python.
+Run the Script:
 
-    bash
+bash
 
-    python xc_webcam_stopwatch.py
+python xc_webcam_stopwatch.py
 
-    GUI Instructions:
-        Click on "Instructions" to open the instructions file.
-        Click on "Open XC Merged Results" to open the XC Merged Results application.
-        Click on "Set Boys or Girls Time File" to set the output file for recorded times.
-        Click on "Start Video Capture" to start capturing video from webcams.
-        Click on "Start Timer" to start the stopwatch.
-        Click on "Start Screen Recording" to start recording the screen.
-        Click on "Stop Screen Recording" to stop the screen recording.
-        Click on "Stop Timer" to stop the stopwatch.
-        Click on "Stop Video Capture" to stop capturing video from webcams.
-        Click on "Quit" to exit the program.
+GUI Instructions:
+
+    Click on "Instructions" to open the instructions file.
+    Click on "Open XC Merged Results" to open the XC Merged Results application.
+    Click on "Set Boys or Girls Time File" to set the output file for recorded times.
+    Click on "Start Video Capture" to start capturing video from webcams.
+    Click on "Start Timer" to start the stopwatch.
+    Click on "Start Screen Recording" to start recording the screen.
+    Click on "Stop Screen Recording" to stop the screen recording.
+    Click on "Stop Timer" to stop the stopwatch.
+    Click on "Stop Video Capture" to stop capturing video from webcams.
+    Click on "Quit" to exit the program.
 
 Functions
 
@@ -97,6 +91,23 @@ Functions
     open_instructions(): Opens the instructions HTML file.
     create_gui(): Creates the main GUI for the program.
 
-License
+Integration with Other Tools
 
-This project is licensed under the MIT License.
+This project incorporates the use of external tools for enhanced functionality:
+
+    XNote Stopwatch: Used independently for race timing purposes. More information available at XNote Stopwatch.
+    CC Scorer: Previously available from Scott's Software, this tool is referenced for cross country scoring functionality.
+
+Affiliation and License
+
+This project is not affiliated with XNote Stopwatch or CC Scorer. It is licensed under the MIT License. Use at your own risk.
+Recommendations
+
+For optimal use:
+
+    Use two webcams: one for bib number recording and another for finish line recording.
+    Utilize two laptops: one for camera-based finish line recording and another for bib number recording. Save data to a flash drive for scoring.
+
+TODOs
+
+    Incorporate RFID tags for athlete time capture.
