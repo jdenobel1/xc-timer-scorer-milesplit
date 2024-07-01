@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ol {
+            margin-top: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        b {
+            font-weight: bold;
+        }
+        .sub-item {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .sub-item ol {
+            list-style-type: lower-alpha;
+        }
+    </style>
+</head>
+<body>
+    <h1>Instructions</h1>
+    <ol>
+        <li>
+            Click the <b>Set Boys or Girls Text File</b> button. Name a file for either boys' or girls' times, depending on which race is going first.
+        </li>
+        <li class="sub-item">
+            Click the <b>Open XC Merged Results</b> button. This will open the Merged Results Program.
+            <div class="sub-item">
+                <b>XC Merged Results Program</b>
+                <ol>
+                    <li>Allows you to use a Milesplit CSV entries file for easy scoring setup.</li>
+                    <li>Converts the Milesplit CSV entries to only have the TEAM | ATHLETE NAME | GENDER.</li>
+                    <li>
+                        Open the CC_Scorer:
+                        <ol>
+                            <li>Adds a Bib column to identify the athlete.</li>
+                            <li>Enter bibs as athletes finish (use one laptop to enter bibs).</li>
+                            <li>Copy and Paste the Times from the text created on the XC Webcam Stopwatch program.</li>
+                            <li>With the bibs and times, the XC_Scorer will automatically score a cross-country meet for athletes and teams.</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+        </li>
+        <li>Click the <b>Start Video Capture</b> button. This will bring up at least one webcam display with an overlaid timer (stopwatch).</li>
+        <li>
+            Click the <b>Start Timer</b> button. This will start the stopwatch timer. You can also press the Spacebar to start the timer, but the cursor must be on the webcam display for this to work.
+        </li>
+        <li>
+            Click the <b>Start Screen Recording</b> button. This will record your desktop's screen and save it as an AVI file, which you will be prompted to name. This is a way to review time and athletes' finishes if athletes are wearing bibs.
+        </li>
+        <li>
+            Once a race is finished, click the buttons in the following order:
+            <ol>
+                <li>Click <b>Stop Screen Recording</b> to stop the screen recording.</li>
+                <li>Click <b>Stop Timer</b> to stop the stopwatch timer from running.</li>
+                <li>Click <b>Stop Video Capture</b> to close the webcam displays.</li>
+            </ol>
+        </li>
+        <li>Click the <b>Quit</b> button to close the program.</li>
+    </ol>
+</body>
+</html>
