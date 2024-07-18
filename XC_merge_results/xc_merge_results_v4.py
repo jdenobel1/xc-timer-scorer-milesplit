@@ -5,9 +5,12 @@ import os
 import webbrowser
 import subprocess
 
+# Get the directory where the script is located
+base_path = os.path.dirname(os.path.abspath(__file__))
+
 # Function to open instructions file
 def open_instructions():
-    instructions_path = r"C:\Users\jdeno\Desktop\XC_Merge_Results\instructions.html"
+    instructions_path = os.path.join(base_path, 'instructions.html')
     try:
         webbrowser.open(instructions_path, new=2)  # Opens in a new tab if possible
     except Exception as e:
@@ -33,13 +36,16 @@ def process_milesplit_csv(input_csv):
 
 # Function to save the processed data to CSV and TXT files
 def save_to_files(boys_df, girls_df):
+    # Get the path to the Desktop
+    desktop_path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+
     # Save to CSV files
-    boys_df.to_csv("boys_output.csv", index=False)
-    girls_df.to_csv("girls_output.csv", index=False)
+    boys_df.to_csv(os.path.join(desktop_path, "boys_output.csv"), index=False)
+    girls_df.to_csv(os.path.join(desktop_path, "girls_output.csv"), index=False)
 
     # Save to TXT files
-    boys_df.to_csv("boys_output.txt", columns=['Team', 'Name', 'Grade'], index=False, sep='\t')
-    girls_df.to_csv("girls_output.txt", columns=['Team', 'Name', 'Grade'], index=False, sep='\t')
+    boys_df.to_csv(os.path.join(desktop_path, "boys_output.txt"), columns=['Team', 'Name', 'Grade'], index=False, sep='\t')
+    girls_df.to_csv(os.path.join(desktop_path, "girls_output.txt"), columns=['Team', 'Name', 'Grade'], index=False, sep='\t')
 
 # Function to browse and select the CSV file
 def browse_csv_file():
@@ -67,7 +73,7 @@ def convert_csv_to_files():
 
 # Function to open the CC_Scores file
 def open_cc_scores():
-    cc_scores_path = r"C:\Users\jdeno\Desktop\XC_Merge_Results\CC_Scorer.xls"
+    cc_scores_path = os.path.join(base_path, 'CC_Scorer.xls')
     try:
         if os.name == 'nt':  # Windows
             os.startfile(cc_scores_path)
@@ -80,7 +86,7 @@ def open_cc_scores():
 
 # Function to open XNoteStopWatch
 def open_xnsw():
-    xnsw_path = r"C:\Users\jdeno\Desktop\XC_Merge_Results\xnsw.exe"
+    xnsw_path = os.path.join(base_path, 'xnsw.exe')
     try:
         subprocess.Popen(xnsw_path)
     except Exception as e:
@@ -97,7 +103,7 @@ def create_gui():
     tk.Button(root, text="Browse Milesplit CSV File", command=browse_csv_file).pack(pady=5)
     tk.Button(root, text="Convert to Boys and Girls CSV | TXT files", command=convert_csv_to_files).pack(pady=5)
     tk.Button(root, text="Open CC_Scorer", command=open_cc_scores).pack(pady=5)
-    tk.Button(root, text="Open XNoteStopWatch", command=open_xnsw).pack(pady=5)  # New button
+    tk.Button(root, text="Open XNoteStopWatch", command=open_xnsw).pack(pady=5)
     tk.Button(root, text="Quit", command=root.quit).pack(pady=20)
 
     root.mainloop()
