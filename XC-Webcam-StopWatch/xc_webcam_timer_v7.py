@@ -8,6 +8,8 @@ from tkinter import filedialog, messagebox
 import subprocess
 import os
 import webbrowser
+import sounddevice as sd
+import sys
 
 # Global variables for the stopwatch
 start_time = None
@@ -148,8 +150,9 @@ def stop_video_capture():
 # Function to start the timer
 def start_timer():
     global running, start_time
-    running = True
-    start_time = time.time()
+    if not running:  # Only start the timer if it is not already running
+        running = True
+        start_time = time.time()
 
 # Function to stop the timer
 def stop_timer():
@@ -172,25 +175,46 @@ def quit_program():
 def open_xc_merged_results():
     try:
         # Path to the executable
-        exe_path = r"C:\Users\jdeno\Desktop\XC_Webcam_stopwatch\xc_merge_results_v4\xc_merge_results_v4.exe"
-        
-        # Check if the executable file exists
-        if os.path.exists(exe_path):
-            # Launch the executable
-            subprocess.Popen([exe_path])
-            print(f"Opened {exe_path} successfully.")
+        if getattr(sys, 'frozen', False):
+            exe_path = os.path.join(sys._MEIPASS, 'xc_merge_results_v4.exe')
         else:
-            messagebox.showerror("Error", "Executable file not found.")
+            exe_path = os.path.join(os.path.dirname(__file__), 'xc_merge_results_v4.exe')
+        
+        # Launch the executable
+        subprocess.Popen([exe_path])
+        print(f"Opened {exe_path} successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"Could not open application: {e}")
 
 # Function to open instructions HTML file
 def open_instructions():
-    instructions_file = r"C:\Users\jdeno\Desktop\XC_Webcam_stopwatch\instructions.html"
     try:
+        # Path to the HTML file
+        if getattr(sys, 'frozen', False):
+            instructions_file = os.path.join(sys._MEIPASS, 'instructions_xc_webcam_timer_v7.html')
+        else:
+            instructions_file = os.path.join(os.path.dirname(__file__), 'instructions_xc_webcam_timer_v7.html')
+        
+        # Open the HTML file in a web browser
         webbrowser.open_new(instructions_file)
     except Exception as e:
         messagebox.showerror("Error", f"Could not open instructions: {e}")
+
+# Function to monitor sound levels from the microphone
+def sound_monitor_callback(indata, frames, time, status):
+    volume_norm = np.linalg.norm(indata) * 10
+    if volume_norm > 90:
+        start_timer()
+
+# Function to start the sound monitor thread
+def start_sound_monitor():
+    sound_monitor_thread = threading.Thread(target=monitor_sound)
+    sound_monitor_thread.daemon = True
+    sound_monitor_thread.start()
+
+def monitor_sound():
+    with sd.InputStream(callback=sound_monitor_callback):
+        sd.sleep(-1)
 
 # Create the main GUI
 def create_gui():
@@ -224,6 +248,9 @@ def create_gui():
 stopwatch_thread = threading.Thread(target=update_stopwatch)
 stopwatch_thread.daemon = True
 stopwatch_thread.start()
+
+# Start the sound monitor thread
+start_sound_monitor()
 
 # Create and run the GUI
 create_gui()
