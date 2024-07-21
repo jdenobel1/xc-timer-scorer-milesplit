@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cross Country Meet Timer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="interactive"></div>
+    <div id="overlay">00:00:00.00</div>
+    <div id="controls">
+      <div id="controls-left">
+        <div class="control-group">
+          <input type="text" id="times-filename" placeholder="Filename for times (without extension)">
+          <button id="download-times-btn">Download Times</button>
+        </div>
+        <div class="control-group">
+          <p id="times">Times will appear here</p>
+        </div>
+        <div class="control-group">
+          <input type="text" id="barcode-filename" placeholder="Filename for bib numbers (without extension)">
+          <button id="download-barcodes-btn">Download Bib Numbers</button>
+        </div>
+        <div class="control-group">
+          <p id="codes">Bib Numbers will appear here</p>
+        </div>
+      </div>
+      <div id="controls-right">
+        <div class="control-group">
+          <button id="start-btn">Start Stopwatch</button>
+          <button id="stop-btn">Stop Stopwatch</button>
+        </div>
+        <div class="control-group">
+          <button id="start-recording-btn">Start Recording</button>
+          <button id="stop-recording-btn">Stop Recording</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <script>
+    let detectedBibNumbers = new Set();
+    let times = [];
+    let startTime, elapsedTime = 0, intervalId;
+    let mediaRecorder, recordedChunks = [];
+
+    function formatTime(time) {
+      const date = new Date(time);
+      return date.toISOString().substr(11, 11);
+    }
+
+    function updateOverlay() {
+      document.getElementById('overlay').innerText = formatTime(elapsedTime);
+    }
+
+    document.getElementById('start-btn').addEventListener('click', function () {
+      if (!intervalId) {
+        startTime = Date.now() - elapsedTime;
+        intervalId = setInterval(function () {
+          elapsedTime = Date.now() - startTime;
+          updateOverlay();
+        }, 10);
+      }
+    });
+
+    document.getElementById('stop-btn').addEventListener('click', function () {
+      clearInterval(intervalId);
+      intervalId = null;
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.code === 'Space') {
+        times.push(formatTime(elapsedTime));
+        document.getElementById('times').innerText = times.join(', ');
+      }
+    });
+
+    document.getElementById('download-barcodes-btn').addEventListener('click', function () {
+      const filename = document.getElementById('barcode-filename').value || 'bib_numbers';
+      const blob = new Blob([Array.from(detectedBibNumbers).join('\n')], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('download-times-btn').addEventListener('click', function () {
+      const filename = document.getElementById('times-filename').value || 'times';
+      const blob = new Blob([times.join('\n')], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('start-recording-btn').addEventListener('click', async function () {
+      try {
+        const displayStream = await navigator.mediaDevices.getDisplayMedia({
+          video: { mediaSource: "screen" }
+        });
+        mediaRecorder = new MediaRecorder(displayStream);
+        mediaRecorder.ondataavailable = function (event) {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+        mediaRecorder.onstop = function () {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'recording.webm';
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+        mediaRecorder.start();
+      } catch (err) {
+        console.error('Error starting screen recording:', err);
+      }
+    });
+
+    document.getElementById('stop-recording-btn').addEventListener('click', function () {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+      }
+    });
+
+    Quagga.init({
+      inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: document.querySelector('#interactive')
+      },
+      decoder: {
+        readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader", "upc_reader", "upc_e_reader", "i2of5_reader"]
+      }
+    }, function (err) {
+      if (err) {
+        console.error('Quagga initialization failed:', err);
+        return;
+      }
+      Quagga.start();
+    });
+
+    Quagga.onDetected(function (data) {
+      const code = data.codeResult.code;
+      if (!detectedBibNumbers.has(code)) {
+        detectedBibNumbers.add(code);
+        document.getElementById('codes').innerText = Array.from(detectedBibNumbers).join(', ');
+      }
+    });
+
+    document.getElementById('upload-csv-btn').addEventListener('click', function () {
+      const fileInput = document.getElementById('csv-file-input');
+      if (fileInput.files.length === 0) {
+        alert('Please select a CSV file first.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('csv', fileInput.files[0]);
+
+      fetch('process_csv.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const boysLink = document.createElement('a');
+          boysLink.href = data.boysUrl;
+          boysLink.download = 'boys.txt';
+          document.body.appendChild(boysLink);
+          boysLink.click();
+          document.body.removeChild(boysLink);
+
+          const girlsLink = document.createElement('a');
+          girlsLink.href = data.girlsUrl;
+          girlsLink.download = 'girls.txt';
+          document.body.appendChild(girlsLink);
+          girlsLink.click();
+          document.body.removeChild(girlsLink);
+        } else {
+          alert('Error processing the CSV file.');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  </script>
+  
+  <div id="file-controls">
+    <div class="control-group">
+      <button id="open-xnsw-btn">Open xnsw.exe</button>
+      <button id="open-cc-scorer-btn">Open CC_Scorer.xls</button>
+    </div>
+    <div class="control-group">
+      <input type="file" id="csv-file-input" accept=".csv">
+      <button id="upload-csv-btn">Upload CSV and Convert</button>
+    </div>
+  </div>
+</body>
+
+</html>
